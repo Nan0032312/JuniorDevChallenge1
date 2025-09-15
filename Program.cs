@@ -2,53 +2,66 @@
 {
     internal class Program
     {
+        class Student
+        {
+            public string Name { get; set; } = string.Empty;
+            public int Grade { get; set; }
+        }
         static void Main()
         {
-            // 建立兩個 List 來儲存學生姓名與成績
-            List<string> names = new List<string>();
-            List<int> grades = new List<int>();
-            string again = "Y";
+            List<Student> students = new List<Student>();
 
-            // 使用 while 迴圈允許使用者不斷輸入學生資料
-            while (again == "Y")
+            while (true)
             {
-                Console.WriteLine("請輸入學生姓名: ");
-                string n = Console.ReadLine(); // 讀取學生姓名
-                names.Add(n);
+                string name;
+                while (true)
+                {
+                    Console.Write("請輸入學生姓名: ");
+                    name = Console.ReadLine()?.Trim() ?? "";
 
-                Console.WriteLine("請輸入學生成績: ");
-                int g = Convert.ToInt32(Console.ReadLine());
-                grades.Add(g);
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        Console.WriteLine("姓名不能為空，請重新輸入。");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
 
-                Console.WriteLine("是否要輸入另一位學生？(Y/N)");
-                again = Console.ReadLine();
+                Console.Write("請輸入學生成績: ");
+                if (!int.TryParse(Console.ReadLine(), out int grade))
+                {
+                    Console.WriteLine("成績輸入錯誤，請輸入有效的整數。");
+                    continue;
+                }
+
+                students.Add(new Student { Name = name, Grade = grade });
+
+                Console.Write("是否要輸入另一位學生？(Y/N): ");
+                string again = Console.ReadLine()?.Trim().ToUpper() ?? "";
+                if (again != "Y") break;
             }
 
-            // 根據學生成績輸出對應的等級
-            for (int i = 0; i < names.Count; i++)
+            foreach (var student in students)
             {
-                if (grades[i] >= 90)
-                {
-                    Console.WriteLine(names[i] + " 的成績是 A");
-                }
-                else if (grades[i] >= 80)
-                {
-                    Console.WriteLine(names[i] + " 的成績是 B");
-                }
-                else if (grades[i] >= 70)
-                {
-                    Console.WriteLine(names[i] + " 的成績是 C");
-                }
-                else if (grades[i] >= 60)
-                {
-                    Console.WriteLine(names[i] + " 的成績是 D");
-                }
-                else
-                {
-                    Console.WriteLine(names[i] + " 的成績是 F");
-                }
+                string level = GetGradeLevel(student.Grade);
+                Console.WriteLine($"{student.Name} 的成績是 {level}");
             }
         }
+
+        static string GetGradeLevel(int grade)
+        {
+            return grade switch
+            {
+                >= 90 => "A",
+                >= 80 => "B",
+                >= 70 => "C",
+                >= 60 => "D",
+                _ => "F"
+            };
+        }
+
     }
 
 }
